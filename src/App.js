@@ -8,13 +8,8 @@ import { useState, useEffect } from "react";
 
 function App() {
   const [episodes, setEpisodes] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = React.createRef();
-  const [epURL, setEpURL] = useState("");
-  let thisurl;
 
   const RSS_FEED = "https://feeds.libsyn.com/275975/rss";
-  const CORS_ANYWHERE = "https://cors-anywhere.herokuapp.com/";
 
   const fetchPodcastData = async () => {
     try {
@@ -39,34 +34,21 @@ function App() {
     fetchPodcastData();
   }, []);
 
-  useEffect(() => {
-    // console.log(episodes);
-    let firstep = episodes[0];
-    console.log("single ep");
-    console.log(firstep ? firstep : "noep");
-    // console.log(firstep ? episodes[0].enclosure[0].$.url : "noep");
-
-    setEpURL(firstep ? episodes[0].enclosure[0].$.url : "");
-    console.log("enclosure");
-    console.log(firstep);
-  }, [episodes]);
-
   const EpisodeCard = (props) => {
     const title = props.episode.title[0];
+    const enclosure =
+      props.episode.enclosure && props.episode.enclosure.length > 0
+        ? props.episode.enclosure[0].$
+        : null;
+
     return (
       <>
-        <p>{ep.title[0]}</p>
+        <p>{title}</p>
         <div>
-          {(thisurl = ep.enclosure[0].$.url)}
-          {console.log(thisurl)}
-          {epURL !== "" ? (
-            <audio controls>
-              <source src={thisurl} type="audio/mpeg" />
-              Your browser does not support the audio element.
-            </audio>
-          ) : (
-            <p>notloaded</p>
-          )}
+          <audio controls>
+            <source src={enclosure ? enclosure.url : ""} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
         </div>
       </>
     );
@@ -76,7 +58,7 @@ function App() {
     <div className="App">
       app.js
       {episodes.map((ep) => (
-        <EpisodeCard />
+        <EpisodeCard episode={ep} />
       ))}
     </div>
   );
